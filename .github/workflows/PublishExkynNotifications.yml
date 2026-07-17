@@ -1,0 +1,32 @@
+name: Publicar Exkyn.Notifications no NuGet
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'Src/Exkyn.Notifications/**' 
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Setup do .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restaurar dependências
+      run: dotnet restore ./Src/Exkyn.Notifications/Exkyn.Notifications.csproj
+
+    - name: Build do projeto
+      run: dotnet build ./Src/Exkyn.Notifications/Exkyn.Notifications.csproj --configuration Release --no-restore
+
+    - name: Pack com Versionamento Automático
+      run: dotnet pack ./Src/Exkyn.Notifications/Exkyn.Notifications.csproj --configuration Release --no-build -p:PackageVersion=1.0.${{ github.run_number }} --output ./nupkg
+
+    - name: Push para o NuGet.org
+      run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

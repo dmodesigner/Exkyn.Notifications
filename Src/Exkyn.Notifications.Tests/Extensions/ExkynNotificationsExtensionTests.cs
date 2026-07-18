@@ -8,6 +8,19 @@ namespace Exkyn.Notifications.Tests.Extensions;
 public class ExkynNotificationsExtensionTests
 {
     [Fact]
+    public void AddExkynNOtifications_WhenServicesIsNull_ShouldThrowArgumentNullException()
+    {
+        //Arrange
+        IServiceCollection services = null;
+        
+        //Act
+        Action action = () => services.AddExkynNotifications();
+        
+        //Assert
+        action.Should().Throw<ArgumentNullException>();
+    }
+    
+    [Fact]
     public void AddExkynNotifications_ShouldReturnBuilderWithCorrectServices()
     {
         //Arrange

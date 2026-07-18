@@ -6,5 +6,10 @@ namespace Exkyn.Notifications.Extensions;
 
 public static class ExkynNotificationsExtension
 {
-    public static IExkynNotificationsBuilder AddExkynNotifications(this IServiceCollection services) => new ExkynNotificationsBuilder(services);
+    public static IExkynNotificationsBuilder AddExkynNotifications(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        
+        return new ExkynNotificationsBuilder(services);   
+    }
 }

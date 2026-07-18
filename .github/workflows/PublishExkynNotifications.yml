@@ -3,8 +3,9 @@ name: Publicar Exkyn.Notifications no NuGet
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'Src/Exkyn.Notifications/**'
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
@@ -33,10 +34,12 @@ jobs:
         run: dotnet pack ./Src/Exkyn.Notifications/Exkyn.Notifications.csproj --configuration Release --no-build -p:PackageVersion=1.0.${{ github.run_number }} --output ./nupkg
       
       - name: Obter token temporário do NuGet
+        if: github.event_name == 'push'
         id: nuget_login
         uses: NuGet/login@v1
         with:
           user: ${{ secrets.NUGET_USER }}
       
       - name: Push para o NuGet.org
+        if: github.event_name == 'push'
         run: dotnet nuget push ./nupkg/*.nupkg --api-key "${{ steps.nuget_login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
